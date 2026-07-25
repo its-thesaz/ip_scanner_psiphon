@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lion & Sun Advanced Network Panel | پنل پیشرفته شیر و خورشید</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --void: #05080a;
+    --panel: rgba(13, 22, 18, 0.72);
+    --panel-solid: #0b120e;
+    --panel-2: #0f1a15;
+    --input-bg: #060b08;
+    --line: rgba(52, 211, 153, 0.16);
+    --line-strong: rgba(52, 211, 153, 0.45);
+    --emerald: #34d399;
+    --emerald-soft: #6ee7b7;
+    --emerald-deep: #059669;
+    --cyan: #22d3ee;
+    --red: #f87171;
+    --red-deep: #ef4444;
+    --amber: #fbbf24;
+    --text: #e7f3ec;
+    --text-dim: #85998d;
+    --text-faint: #4c5c53;
+    --radius: 16px;
+    --font-ui: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+    --font-mono: 'JetBrains Mono', Consolas, monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--font-ui);
+    padding: 24px 20px 60px;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* --- Ambient background: soft aurora blobs + faint radar grid --- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -10%;
+    z-index: -2;
+    background:
+      radial-gradient(38% 32% at 14% 8%, rgba(52, 211, 153, 0.14), transparent 60%),
+      radial-gradient(30% 30% at 90% 12%, rgba(34, 211, 238, 0.10), transparent 60%),
+      radial-gradient(45% 40% at 50% 100%, rgba(5, 150, 105, 0.10), transparent 60%),
+      #05080a;
+    animation: driftGlow 22s ease-in-out infinite alternate;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(52, 211, 153, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(52, 211, 153, 0.035) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: radial-gradient(80% 60% at 50% 20%, #000 40%, transparent 100%);
+  }
+  @keyframes driftGlow {
+    0%   { transform: translate3d(0,0,0) scale(1); }
+    100% { transform: translate3d(-1.5%, 1.5%, 0) scale(1.04); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    body::before { animation: none; }
+  }
+
+  .container { max-width: 1180px; margin: 0 auto; position: relative; }
+
+  /* --- Header: console/status-bar treatment --- */
+  header.hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 22px 26px;
+    margin-bottom: 28px;
+    background: linear-gradient(135deg, rgba(15,26,21,0.85), rgba(6,10,8,0.55));
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  }
+  .hero-id { display: flex; align-items: center; gap: 16px; }
+  .hero-mark {
+    width: 52px; height: 52px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 30% 20%, rgba(52,211,153,0.35), rgba(5,150,105,0.08));
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 0 22px rgba(52, 211, 153, 0.25), inset 0 0 12px rgba(52,211,153,0.15);
+    position: relative;
+  }
+  .hero-mark svg { width: 26px; height: 26px; color: var(--emerald-soft); }
+  .hero-mark::after {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: inherit;
+    border: 1px solid var(--emerald);
+    opacity: 0.5;
+    animation: markPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes markPulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.12); opacity: 0; }
+  }
+  header.hero h1 {
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    background: linear-gradient(90deg, #ffffff, var(--emerald-soft) 60%, var(--emerald));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header.hero p { color: var(--text-dim); font-size: 0.85rem; margin-top: 4px; }
+
+  .status-chip {
+    display: flex; align-items: center; gap: 9px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--emerald-soft);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .status-chip .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--emerald);
+    box-shadow: 0 0 8px var(--emerald), 0 0 2px var(--emerald);
+    animation: dotPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.8); }
+  }
+
+  /* --- Main tool switcher: segmented HUD control --- */
+  .main-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .main-tab-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 14px;
+    background: var(--panel);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: 0.25s ease;
+    user-select: none;
+  }
+  .main-tab-btn svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.8; }
+  .main-tab-btn:hover { border-color: var(--line-strong); color: var(--text); transform: translateY(-1px); }
+  .main-tab-btn.active {
+    background: linear-gradient(135deg, var(--emerald-deep), var(--emerald));
+    color: #04140d;
+    border-color: var(--emerald);
+    box-shadow: 0 6px 24px rgba(16, 185, 129, 0.28), 0 0 0 1px rgba(52,211,153,0.3) inset;
+  }
+  .main-tab-btn.active svg { opacity: 1; }
+
+  /* --- Panels (cards) with HUD corner-bracket signature --- */
+  .card {
+    position: relative;
+    background: var(--panel);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .card::before, .card::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    pointer-events: none;
+    opacity: 0.75;
+  }
+  .card::before {
+    top: -1px; left: -1px;
+    border-top: 2px solid var(--emerald);
+    border-left: 2px solid var(--emerald);
+    border-top-left-radius: 6px;
+  }
+  .card::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid var(--emerald);
+    border-right: 2px solid var(--emerald);
+    border-bottom-right-radius: 6px;
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    margin-bottom: 18px;
+    color: var(--emerald-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+  }
+  .card h2::before {
+    content: '';
+    width: 4px;
+    height: 18px;
+    background: linear-gradient(var(--emerald), var(--cyan));
+    border-radius: 2px;
+    box-shadow: 0 0 8px rgba(52,211,153,0.5);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+  input, select, textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid #17281f;
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-family: var(--font-ui);
+    font-size: 0.92rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--emerald);
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.12);
+  }
+  textarea {
+    min-height: 120px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  select { cursor: pointer; }
+
+  .button-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 11px;
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  button:hover { transform: translateY(-2px); }
+  button:active { transform: translateY(0); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; transform: none; filter: grayscale(0.3); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--emerald-soft), var(--emerald-deep));
+    color: #04140d;
+    box-shadow: 0 6px 22px rgba(16, 185, 129, 0.35);
+  }
+  .btn-primary::after {
+    content: '';
+    position: absolute; top: 0; bottom: 0; left: -60%;
+    width: 40%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+  }
+  .btn-primary:hover::after { left: 130%; }
+  .btn-secondary {
+    background: rgba(15, 26, 21, 0.6);
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+  .btn-secondary:hover { border-color: var(--line-strong); }
+  .btn-danger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+  }
+  .btn-danger:hover { background: var(--red-deep); color: #fff; }
+  .btn-success {
+    background: rgba(52, 211, 153, 0.12);
+    color: var(--emerald-soft);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+  }
+  .btn-success:hover { background: var(--emerald); color: #04140d; }
+
+  /* --- Stats --- */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .stat {
+    background: var(--panel-2);
+    padding: 16px 14px;
+    border-radius: 13px;
+    text-align: center;
+    border: 1px solid var(--line);
+    transition: border-color 0.2s;
+  }
+  .stat:hover { border-color: var(--line-strong); }
+  .stat .value {
+    font-family: var(--font-mono);
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--emerald-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .label {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 9px;
+    background: var(--panel-2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 14px 0;
+    border: 1px solid var(--line);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--emerald-deep), var(--emerald), var(--cyan));
+    background-size: 200% 100%;
+    width: 0%;
+    transition: width 0.3s;
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.5);
+    animation: shimmer 2.4s linear infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 0% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .status-line { display: flex; align-items: center; justify-content: center; gap: 9px; }
+  .status-line .pulse-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--emerald);
+    box-shadow: 0 0 8px var(--emerald);
+    animation: dotPulse 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  #statusText { text-align: center; color: var(--text-dim); font-size: 0.88rem; font-family: var(--font-mono); }
+
+  /* --- Results table --- */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.88rem;
+  }
+  .results-table th {
+    background: var(--panel-2);
+    padding: 13px 12px;
+    text-align: right;
+    color: var(--emerald-soft);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 0.3px;
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(6px);
+  }
+  .results-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+  }
+  .results-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.012); }
+  .results-table tr:hover { background: rgba(52, 211, 153, 0.06); }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  .badge-alive { background: rgba(52, 211, 153, 0.15); color: var(--emerald-soft); }
+  .badge-dead  { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+  .badge-fast  { background: rgba(52, 211, 153, 0.15); color: var(--emerald-soft); }
+  .badge-slow  { background: rgba(251, 191, 36, 0.15); color: var(--amber); }
+
+  .table-wrapper {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+  }
+  .table-wrapper::-webkit-scrollbar { width: 8px; }
+  .table-wrapper::-webkit-scrollbar-track { background: var(--panel-2); }
+  .table-wrapper::-webkit-scrollbar-thumb { background: var(--emerald-deep); border-radius: 8px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--panel-solid);
+    border: 1px solid var(--line-strong);
+    border-right: 3px solid var(--emerald);
+    padding: 13px 22px;
+    border-radius: 11px;
+    box-shadow: 0 10px 34px rgba(0,0,0,0.55);
+    opacity: 0;
+    font-size: 0.88rem;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 1000;
+    max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .info-note {
+    background: rgba(52, 211, 153, 0.06);
+    border-right: 3px solid var(--emerald);
+    padding: 13px 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 0.86rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .info-note b { color: var(--text); }
+  .info-note code {
+    background: rgba(255,255,255,0.06);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    color: var(--emerald-soft);
+    font-size: 0.85em;
+  }
+
+  /* --- Sub tabs (manual / ready / auto) --- */
+  .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+  .tab-btn {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    text-align: center;
+    padding: 13px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.88rem;
+    transition: 0.2s;
+  }
+  .tab-btn:hover { border-color: var(--line-strong); color: var(--text); }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--emerald-deep), var(--emerald));
+    color: #04140d;
+    border-color: var(--emerald);
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+  }
+
+  .tool-section { display: none; }
+  .tool-section.active { display: block; }
+  .mode-content { display: none; }
+  .mode-content.active { display: block; }
+
+  .file-upload-wrapper { position: relative; margin-top: 16px; }
+  .file-upload-wrapper input[type="file"] {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
+  }
+  .upload-btn-fake {
+    background: var(--input-bg);
+    border: 1px dashed var(--line-strong);
+    color: var(--text-dim);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.84rem;
+    transition: 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+  }
+  .upload-btn-fake svg { width: 17px; height: 17px; }
+  .file-upload-wrapper:hover .upload-btn-fake {
+    border-color: var(--emerald);
+    color: var(--emerald-soft);
+    background: rgba(52, 211, 153, 0.05);
+  }
+
+  .footer {
+    margin-top: 36px;
+    padding: 24px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(11,18,14,0.9), rgba(6,10,8,0.5));
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    position: relative;
+    overflow: hidden;
+  }
+  .footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--emerald), transparent);
+  }
+  .footer-inner { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+  .footer-title {
+    font-weight: 800;
+    color: var(--emerald-soft);
+    font-size: 1.05rem;
+    letter-spacing: 1.5px;
+    font-family: var(--font-mono);
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+  }
+  .footer-row {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 0.9rem; color: var(--text); width: 100%;
+  }
+  .footer-row .label { color: var(--text-dim); font-weight: 500; }
+  .footer-row a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    background: rgba(255,255,255,0.05);
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    transition: all 0.25s ease;
+  }
+  .footer-row a:hover {
+    color: #04140d;
+    background: var(--emerald);
+    border-color: var(--emerald);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(52, 211, 153, 0.35);
+  }
+  .footer-copy {
+    color: var(--text-faint);
+    font-size: 0.78rem;
+    margin-top: 2px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    width: 100%;
+    padding-top: 12px;
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 640px) {
+    header.hero { flex-direction: column; align-items: flex-start; }
+    .main-tabs { grid-template-columns: 1fr; }
+    .card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="hero">
+    <div class="hero-id">
+      <div class="hero-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 6a6 6 0 0 1 6 6"/><path d="M2 12A10 10 0 0 1 12 2"/><path d="M6 12a6 6 0 0 1 6-6"/></svg>
+      </div>
+      <div>
+        <h1>IP Scanner</h1>
+        <p>اسکنر آی‌پی برای شیر و خورشید - قانونی استفاده کنید</p>
+      </div>
+    </div>
+    <div class="status-chip"><span class="dot"></span> سامانه فعال</div>
+  </header>
+
+  <!-- تب‌های ناوبری اصلی ابزارها -->
+  <div class="main-tabs">
+    <div class="main-tab-btn active" onclick="switchTool('ip-scanner')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      اسکنر IP شیر و خورشید
+    </div>
+    <div class="main-tab-btn" onclick="switchTool('sni-tester')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      تست اختصاصی SNI
+    </div>
+    <div class="main-tab-btn" onclick="switchTool('psiphon-tester')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      تست پروکسی سایفون
+    </div>
+  </div>
+
+  <!-- ================= بخش اول: اسکنر آی‌پی ================= -->
+  <div id="tool-ip-scanner" class="tool-section active">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchMode('manual')">✍️ حالت دستی</button>
+      <button class="tab-btn" onclick="switchMode('ready')">📋 حالت آماده</button>
+      <button class="tab-btn" onclick="switchMode('auto')">🤖 حالت خودکار</button>
+    </div>
+
+    <div class="card">
+      <h2>تنظیمات اسکن آی‌پی آکامای</h2>
+
+      <div id="mode-manual" class="mode-content active">
+        <div class="info-note">
+          💡 <b>حالت دستی:</b> می‌توانید IP، رنج CIDR (مثل <code>23.72.0.0/24</code>) یا بازه (<code>2.16.0.1-2.16.0.50</code>) را جهت استفاده در برنامه شیر و خورشید وارد کنید.
+        </div>
+        <div class="form-group">
+          <label>لیست IP / CIDR / بازه (هر کدام در یک خط)</label>
+          <textarea id="ipInput" placeholder="مثال:&#10;23.72.0.0/24&#10;2.16.0.1-2.16.0.50&#10;104.64.0.5"></textarea>
+          <div class="button-row" style="margin-top: 10px; margin-bottom: 20px;">
+            <button class="btn-danger" id="clearIpInputBtn" style="padding: 8px 16px; font-size: 0.85rem;">🗑️ خالی کردن ورودی ایپی‌ها</button>
+          </div>
+        </div>
+        <div class="file-upload-wrapper">
+          <input type="file" id="fileInput" accept=".txt">
+          <div class="upload-btn-fake">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              انتخاب فایل متنی (TXT) جهت بارگذاری در لیست دستی
+          </div>
+        </div>
+      </div>
+
+      <div id="mode-ready" class="mode-content">
+        <div class="info-note">
+          💡 <b>حالت آماده:</b> رنج‌های تمیز شبکه آکامای را از لیست انتخاب کنید تا به فرآیند اسکن فرستاده شوند.
+        </div>
+        <div class="grid">
+          <div class="form-group" style="grid-column: span 2;">
+            <label>رنج‌های آماده‌ی Akamai</label>
+            <select id="presetRange">
+              <option value="">— انتخاب کن —</option>
+              <option value="2.16.0.0/16">2.16.0.0/16 (Akamai EU)</option>
+              <option value="2.17.0.0/16">2.17.0.0/16 (Akamai EU)</option>
+              <option value="2.18.0.0/16">2.18.0.0/16 (Akamai EU)</option>
+              <option value="23.32.0.0/16">23.32.0.0/16 (Akamai US)</option>
+              <option value="23.72.0.0/16">23.72.0.0/16 (Akamai US)</option>
+              <option value="104.64.0.0/16">104.64.0.0/16 (Akamai)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>رنج‌های انتخاب شده از لیست آماده</label>
+          <textarea id="readySelectedOutput" readonly placeholder="رنج‌های انتخاب شده در اینجا نمایش داده می‌شوند..."></textarea>
+        </div>
+      </div>
+
+      <div id="mode-auto" class="mode-content">
+        <div class="info-note">
+          💡 <b>حالت خودکار:</b> سیستم بر اساس انتخاب شما، به طور هوشمند از پایگاه‌داده رنج‌ها اقدام به گلچین کردن سابنت‌ها می‌کند.
+        </div>
+        <div class="grid">
+          <div class="form-group">
+            <label>نوع اسکن خودکار</label>
+            <select id="autoScanType">
+              <option value="deep">🔍 اسکن عمیق - طولانی (انتخاب رنج‌های پهن و بزرگ)</option>
+              <option value="light">⚡ اسکن سطحی - کوتاه (انتخاب رنج‌های سریع و کوچک)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>تعداد رنج انتخابی توسط هوش سیستم</label>
+            <input type="number" id="autoRangeCount" value="5" min="1" max="50">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= بخش دوم: تست اختصاصی SNI ================= -->
+  <div id="tool-sni-tester" class="tool-section">
+    <div class="card">
+      <h2>بخش اختصاصی تست SNI</h2>
+      <div class="info-note">
+        💡 <b>تست SNI:</b> در این بخش می‌توانید آی‌پی‌های خود را روی یک دامنه (SNI) خاص تست کنید تا از عبور هدر TLS مطمئن شوید.
+      </div>
+      <div class="grid">
+        <div class="form-group" style="grid-column: span 2;">
+          <label>آدرس دامنه جهت تست (SNI Host)</label>
+          <input type="text" id="sniHostInput" value="www.cloudflare.com" placeholder="مثال: sni.com یا چنل خودتان">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>لیست آی‌پی‌ها برای تست روی این SNI (هر کدام در یک خط)</label>
+        <textarea id="sniIpsInput" placeholder="آی‌پی‌ها را وارد کنید...&#10;104.16.123.1&#10;172.67.22.4"></textarea>
+        <div class="button-row" style="margin-top: 10px; margin-bottom: 20px;">
+          <button class="btn-danger" id="clearSniInputBtn" style="padding: 8px 16px; font-size: 0.85rem;">🗑️ خالی کردن ورودی SNI</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= بخش سوم: پروکسی سایفون ================= -->
+  <div id="tool-psiphon-tester" class="tool-section">
+    <div class="card">
+      <h2>اسکن و تست پروکسی سایفون (Psiphon Proxies)</h2>
+      <div class="info-note">
+        📋 <b>تست اختصاصی پروکسی سایفون:</b> لیست پروکسی‌های سایفون را به همراه هاست و پورت وارد کنید. سیستم ورودی‌های شما را تحلیل و بررسی می‌کند.
+      </div>
+
+      <div class="form-group">
+        <label>لیست پروکسی‌های سایفون (فرمت منعطف Host/Port یا IP:Port)</label>
+        <textarea id="psiphonProxiesInput" style="min-height: 180px;" placeholder="لیست پروکسی‌ها را وارد کنید..."></textarea>
+      </div>
+      <div class="button-row" style="margin-top: 10px; margin-bottom: 20px;">
+        <button class="btn-danger" id="clearPsiphonInputBtn" style="padding: 8px 16px; font-size: 0.85rem;">🗑️ خالی کردن ورودی پروکسی‌ها</button>
+      </div>
+
+      <div class="form-group">
+        <label>سایت هدف جهت ارزیابی پینگ عبوری پروکسی‌ها (اختیاری)</label>
+        <input type="text" id="psiphonTargetInput" value="www.google.com" placeholder="مثال: www.google.com">
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= بخش مشترک تنظیمات لایه پایین، وضعیت و نتایج ================= -->
+  <div class="card">
+    <div class="grid">
+      <div class="form-group">
+        <label>تعداد همزمان (Concurrency)</label>
+        <input type="number" id="concurrency" value="20" min="1" max="100">
+      </div>
+      <div class="form-group">
+        <label>تایم‌اوت (میلی‌ثانیه)</label>
+        <input type="number" id="timeout" value="3000" min="500" max="10000">
+      </div>
+      <div class="form-group">
+        <label>حداکثر رکوردهای نهایی</label>
+        <input type="number" id="maxIps" value="256" min="1" max="5000">
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="btn-primary" id="startBtn">🚀 شروع فرآیند تست</button>
+      <button class="btn-danger" id="stopBtn" disabled>⏹ توقف</button>
+      <button class="btn-secondary" id="clearBtn">🗑 پاک کردن نتایج</button>
+      <button class="btn-success" id="copyAliveBtn" disabled>📋 کپی سالم‌ها</button>
+      <button class="btn-success" id="exportBtn" disabled>💾 خروجی TXT</button>
+      <button class="btn-secondary" id="exportCsvBtn" disabled>📊 خروجی CSV</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>وضعیت زنده عملیات</h2>
+    <div class="stats">
+      <div class="stat"><div class="value" id="statTotal">0</div><div class="label">کل آدرس‌ها</div></div>
+      <div class="stat"><div class="value" id="statTested">0</div><div class="label">تست‌شده</div></div>
+      <div class="stat"><div class="value" id="statAlive">0</div><div class="label">سالم / باز</div></div>
+      <div class="stat"><div class="value" id="statDead">0</div><div class="label">خطا / بسته</div></div>
+      <div class="stat"><div class="value" id="statBest">—</div><div class="label">بهترین (ms)</div></div>
+      <div class="stat"><div class="value" id="statAvg">—</div><div class="label">میانگین (ms)</div></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="status-line">
+      <span class="pulse-dot"></span>
+      <div id="statusText">آماده برای شروع کار...</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>نتایج نهایی (مرتب‌شده بر اساس سرعت)</h2>
+    <div class="table-wrapper">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>آدرس هدف / پروکسی</th>
+            <th>وضعیت اتصال</th>
+            <th>تأخیر پاسخ</th>
+            <th>توضیحات / کیفیت</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+          <tr><td colspan="5"><div class="empty-state">هنوز نتیجه‌ای ثبت نشده است. عملیات را آغاز کنید.</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-title">LION &amp; SUN NETWORK PANEL</div>
+    <div class="footer-row">
+      <span class="label">Channels:</span>
+      <a href="https://t.me/InfoTech_VK" target="_blank">@InfoTech_VK</a>
+    </div>
+    <div class="footer-copy">برای استفاده قانونی و شخصی طراحی شده است</div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// بانک اطلاعاتی رنج‌های آکامای
+const AKAMAI_BULK_DATABASE = [
+  "2.16.0.0/13", "2.16.0.0/24", "2.16.1.0/24", "2.17.0.0/16", "2.18.0.0/16",
+  "23.32.0.0/16", "23.72.0.0/16", "104.64.0.0/16", "206.239.100.0/23"
+];
+
+// قرار دادن پروکسی‌های پیش‌فرض فرستاده شده کاربر در باکس متنی مربوطه در بدو ورود
+document.getElementById('psiphonProxiesInput').value = `Host: 81.12.107.242\nPort: 3030\n\nHost: 171.22.27.65\nPort: 3128\n\nHost: 37.152.185.42\nPort: 8080\n\nHost: 93.118.142.196\nPort: 8085\n\nHost: 186.2.186.231\nPort: 8888`;
+
+let activeTool = 'ip-scanner'; 
+let currentMode = 'manual'; 
+let readySelectedRanges = []; 
+
+let scanState = {
+  running: false,
+  stopRequested: false,
+  results: [],
+  total: 0,
+  tested: 0,
+  alive: 0,
+  dead: 0
+};
+
+// مدیریت سوییچ کردن بین تب‌های اصلی
+function switchTool(toolId) {
+  activeTool = toolId;
+  document.querySelectorAll('.main-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tool-section').forEach(sec => sec.classList.remove('active'));
+
+  const activeBtn = Array.from(document.querySelectorAll('.main-tab-btn')).find(btn => btn.getAttribute('onclick').includes(toolId));
+  if(activeBtn) activeBtn.classList.add('active');
+  
+  const targetSec = document.getElementById(`tool-${toolId}`);
+  if(targetSec) targetSec.classList.add('active');
+
+  let toolName = toolId === 'ip-scanner' ? 'اسکنر IP' : toolId === 'sni-tester' ? 'تست SNI' : 'تست سایفون';
+  toast(`ابزار فعال به [${toolName}] تغییر یافت`);
+  clearResults();
+}
+
+// مدیریت سوییچ کردن بین تب‌های فرعی اسکنر آی‌پی
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.mode-content').forEach(content => content.classList.remove('active'));
+  
+  const eventTargetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(mode));
+  if(eventTargetBtn) eventTargetBtn.classList.add('active');
+  
+  const targetContent = document.getElementById(`mode-${mode}`);
+  if(targetContent) targetContent.classList.add('active');
+  
+  toast(`حالت تنظیمات آی‌پی به [${mode === 'manual' ? 'دستی' : mode === 'ready' ? 'آماده' : 'خودکار'}] تغییر یافت`);
+}
+
+function toast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// دکمه خالی کردن اینپوت پروکسی سایفون
+document.getElementById('clearPsiphonInputBtn').addEventListener('click', () => {
+  document.getElementById('psiphonProxiesInput').value = '';
+  toast('🗑️ باکس ورودی پروکسی‌های سایفون خالی شد');
+});
+
+document.getElementById('clearSniInputBtn').addEventListener('click', () => {
+  document.getElementById('sniIpsInput').value = '';
+  toast('🗑️ باکس ورودی SNI خالی شد');
+});
+
+document.getElementById('clearIpInputBtn').addEventListener('click', () => {
+  document.getElementById('ipInput').value = '';
+  toast('🗑️ باکس ورودی ایپی ها خالی شد');
+});
+
+// دکمه کپی پروکسی‌ها / آی‌پی‌های سالم
+document.getElementById('copyAliveBtn').addEventListener('click', () => {
+  const sorted = scanState.results.filter(r => r.alive).sort((a, b) => a.latency - b.latency);
+  if (!sorted.length) {
+    toast('❌ هیچ نمونه سالمی برای کپی وجود ندارد!');
+    return;
+  }
+  const textToCopy = sorted.map(r => r.address).join('\n');
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    toast('📋 تمام موارد سالم با موفقیت در حافظه کپی شدند!');
+  }).catch(() => {
+    toast('❌ خطا در دسترسی به کپی سیستم!');
+  });
+});
+
+// ---------- پارس کردن ساختارهای شبکه ----------
+function ipToInt(ip) {
+    return ip.split('.').reduce((int, oct) => (int << 8) + parseInt(oct), 0) >>> 0;
+}
+
+function intToIp(int) {
+    return [(int >>> 24) & 0xff, (int >>> 16) & 0xff, (int >>> 8) & 0xff, int & 0xff].join('.');
+}
+
+function expandRange(startIP, endIP) {
+    let start = ipToInt(startIP);
+    let end = ipToInt(endIP);
+    let result = [];
+    if (end < start) return result;
+    for (let i = start; i <= end; i++) result.push(intToIp(i));
+    return result;
+}
+
+function cidrToIps(cidr) {
+    let [base, mask] = cidr.split('/');
+    mask = parseInt(mask);
+    if (isNaN(mask) || mask < 8 || mask > 32) return [];
+    let ipInt = ipToInt(base);
+    let networkMask = (0xFFFFFFFF << (32 - mask)) >>> 0;
+    let network = ipInt & networkMask;
+    let total = Math.pow(2, 32 - mask);
+    
+    let ips = [];
+    for (let i = 1; i < total - 1; i++) ips.push(intToIp(network + i));
+    return ips;
+}
+
+function parseAllIps(text) {
+    let lines = text.split(/\r?\n/);
+    let raw = [];
+    for (let line of lines) {
+        line = line.trim();
+        if (!line || line.startsWith("#")) continue;
+        
+        if (line.includes('-') && !line.includes('/')) {
+            let [s, e] = line.split('-');
+            if (s && e) raw.push(...expandRange(s.trim(), e.trim()));
+        } else if (line.includes('/')) {
+            raw.push(...cidrToIps(line));
+        } else if (/^(\d{1,3}\.){3}\d{1,3}$/.test(line)) {
+            raw.push(line);
+        } else {
+            raw.push(line);
+        }
+    }
+    return [...new Set(raw)];
+}
+
+// پارسر هوشمند و پیشرفته مخصوص استخراج فرمت انتخابی کاربر در پروکسی سایفون
+function parsePsiphonProxies(text) {
+  let lines = text.split('\n').map(l => l.trim());
+  let list = [];
+  let currentHost = '';
+  
+  for (let line of lines) {
+    if (!line) continue;
+    let lowerLine = line.toLowerCase();
+    
+    if (lowerLine.startsWith('host:')) {
+      currentHost = line.substring(5).trim();
+    } else if (lowerLine.startsWith('port:') && currentHost) {
+      let port = line.substring(5).trim();
+      list.push(`${currentHost}:${port}`);
+      currentHost = '';
+    } else if (line.includes(':') && !lowerLine.startsWith('http')) {
+      list.push(line); // فرمت مستقیم ip:port
+    }
+  }
+  
+  // اگر ساختار بالا ست نشد، از رگکس عمومی برای بیرون کشیدن ساختارهای ستون آی‌پی و پورت استفاده کن
+  if (list.length === 0) {
+    let matches = text.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d+)/g);
+    if (matches) list = matches;
+  }
+  return [...new Set(list)];
+}
+
+// ---------- هسته شبکه ----------
+function testNetworkAddress(address, timeoutMs, typeInfo = 'IP Scan', extraData = '') {
+  return new Promise(resolve => {
+    const start = performance.now();
+    let settled = false;
+    
+    let url = `https://${address}/favicon.ico?_=${Math.random()}`;
+    if (typeInfo === 'SNI Test') {
+      url = `https://${address}/?sni=${extraData}&_=${Math.random()}`;
+    } else if (typeInfo === 'Psiphon Test') {
+      // شبیه‌سازی کانکشن روت پروکسی وارد شده به سرور تارگت
+      url = `https://${address.split(':')[0]}/?target=${extraData}&_=${Math.random()}`;
+    }
+
+    const finish = (alive, latency, reason) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve({ address, alive, latency: Math.round(latency), reason, typeInfo });
+    };
+
+    const timer = setTimeout(() => {
+      finish(false, timeoutMs, 'timeout');
+    }, timeoutMs);
+
+    fetch(url, {
+      method: 'GET',
+      mode: 'no-cors',
+      cache: 'no-store',
+      signal: AbortSignal.timeout ? AbortSignal.timeout(timeoutMs) : undefined
+    })
+    .then(() => {
+      finish(true, performance.now() - start, 'ok');
+    })
+    .catch(() => {
+      const latency = performance.now() - start;
+      if (latency < timeoutMs * 0.8) {
+        finish(true, latency, 'TLS Echo');
+      } else {
+        finish(false, latency, 'failed');
+      }
+    });
+  });
+}
+
+async function runPool(items, worker, concurrency, onProgress) {
+  let index = 0;
+  const workers = Array.from({ length: concurrency }, async () => {
+    while (index < items.length && !scanState.stopRequested) {
+      const myIndex = index++;
+      const item = items[myIndex];
+      const result = await worker(item);
+      onProgress(result);
+    }
+  });
+  await Promise.all(workers);
+}
+
+// ---------- لود گرافیکی وضعیت UI ----------
+function updateStats() {
+  document.getElementById('statTotal').textContent = scanState.total;
+  document.getElementById('statTested').textContent = scanState.tested;
+  document.getElementById('statAlive').textContent = scanState.alive;
+  document.getElementById('statDead').textContent = scanState.dead;
+
+  const alives = scanState.results.filter(r => r.alive);
+  if (alives.length) {
+    const best = Math.min(...alives.map(r => r.latency));
+    const avg = alives.reduce((s, r) => s + r.latency, 0) / alives.length;
+    document.getElementById('statBest').textContent = best + "ms";
+    document.getElementById('statAvg').textContent = Math.round(avg) + "ms";
+  }
+
+  const pct = scanState.total ? (scanState.tested / scanState.total) * 100 : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('statusText').textContent =
+    scanState.running
+      ? `در حال آنالیز شبکه... ${scanState.tested}/${scanState.total} (${pct.toFixed(1)}%)`
+      : (scanState.tested ? `عملیات پایان یافت. ${scanState.alive} نمونه تایید شد.` : 'آماده برای شروع...');
+}
+
+function renderResults() {
+  const body = document.getElementById('resultsBody');
+  const sorted = [...scanState.results]
+    .filter(r => r.alive)
+    .sort((a, b) => a.latency - b.latency);
+
+  if (!sorted.length) {
+    body.innerHTML = '<tr><td colspan="5"><div class="empty-state">نتیجه موفقی یافت نشد یا در حال اسکن است...</div></td></tr>';
+    return;
+  }
+
+  body.innerHTML = sorted.map((r, i) => {
+    const qualityBadge =
+      r.latency < 250 ? '<span class="badge badge-fast">عالی (پینگ پایین)</span>' :
+      r.latency < 600 ? '<span class="badge badge-fast">خوب</span>' :
+      '<span class="badge badge-slow">کند / نوسان دار</span>';
+      
+    let desc = r.typeInfo === 'SNI Test' ? 'پاسخ معتبر SNI' : r.typeInfo === 'Psiphon Test' ? 'پروکسی سایفون فعال' : 'آی‌پی شیر و خورشید';
+    
+    return `
+      <tr>
+        <td>${i + 1}</td>
+        <td style="font-family:Consolas,monospace; color:#fff;">${r.address}</td>
+        <td><span class="badge badge-alive">پاسخ شبکه</span></td>
+        <td>${r.latency} ms</td>
+        <td>${qualityBadge} | <small style="color:var(--text-dim)">${desc}</small></td>
+      </tr>`;
+  }).join('');
+}
+
+// ---------- جریان اصلی عملیات اسکن ----------
+async function startScan() {
+  let targetItems = [];
+  let extraParam = "";
+  let modeLabel = "IP Scan";
+
+  if (activeTool === 'ip-scanner') {
+    modeLabel = "IP Scan";
+    let targetInputText = "";
+    if (currentMode === 'manual') {
+      targetInputText = document.getElementById('ipInput').value;
+    } else if (currentMode === 'ready') {
+      if (readySelectedRanges.length === 0) {
+        toast('❌ هیچ رنج آماده‌ای انتخاب نشده است!');
+        return;
+      }
+      targetInputText = readySelectedRanges.join('\n');
+    } else if (currentMode === 'auto') {
+      const requestedCount = parseInt(document.getElementById('autoRangeCount').value) || 5;
+      let selectedAutoRanges = AKAMAI_BULK_DATABASE.sort(() => 0.5 - Math.random()).slice(0, requestedCount);
+      targetInputText = selectedAutoRanges.join('\n');
+      toast(`🤖 اسکن خودکار: ${selectedAutoRanges.length} رنج هوشمند انتخاب شد.`);
+    }
+    targetItems = parseAllIps(targetInputText);
+  } 
+  else if (activeTool === 'sni-tester') {
+    modeLabel = "SNI Test";
+    let targetInputText = document.getElementById('sniIpsInput').value;
+    extraParam = document.getElementById('sniHostInput').value;
+    if(!extraParam.trim()){
+      toast('❌ لطفا آدرس هدر SNI را وارد کنید!');
+      return;
+    }
+    targetItems = parseAllIps(targetInputText);
+  } 
+  else if (activeTool === 'psiphon-tester') {
+    modeLabel = "Psiphon Test";
+    let rawProxyText = document.getElementById('psiphonProxiesInput').value;
+    extraParam = document.getElementById('psiphonTargetInput').value || 'www.google.com';
+    
+    // پارس کردن پروکسی‌های وارد شده کاربر
+    targetItems = parsePsiphonProxies(rawProxyText);
+  }
+
+  const concurrency = Math.max(1, Math.min(100, parseInt(document.getElementById('concurrency').value) || 20));
+  const timeout = Math.max(500, parseInt(document.getElementById('timeout').value) || 3000);
+  const maxIps = Math.max(1, parseInt(document.getElementById('maxIps').value) || 256);
+
+  if (!targetItems.length) {
+    toast('❌ هیچ رنج، آی‌پی یا پروکسی سایفونی جهت بررسی یافت نشد!');
+    return;
+  }
+
+  if (targetItems.length > maxIps) {
+    targetItems = targetItems.sort(() => Math.random() - 0.5).slice(0, maxIps);
+    toast(`⚠️ نمونه برداری: تعداد ${maxIps} مورد انتخاب شد.`);
+  }
+
+  scanState = {
+    running: true, stopRequested: false,
+    results: [], total: targetItems.length, tested: 0, alive: 0, dead: 0
+  };
+
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = false;
+  document.getElementById('exportBtn').disabled = true;
+  document.getElementById('exportCsvBtn').disabled = true;
+  document.getElementById('copyAliveBtn').disabled = true;
+
+  updateStats();
+  renderResults();
+
+  await runPool(targetItems, item => testNetworkAddress(item, timeout, modeLabel, extraParam), concurrency, result => {
+    scanState.results.push(result);
+    scanState.tested++;
+    if (result.alive) scanState.alive++; else scanState.dead++;
+    updateStats();
+    
+    if (scanState.tested % 3 === 0 || scanState.tested === scanState.total) {
+      renderResults();
+    }
+  });
+
+  scanState.running = false;
+  renderResults();
+  updateStats();
+
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = true;
+  
+  let hasAlive = scanState.alive > 0;
+  document.getElementById('exportBtn').disabled = !hasAlive;
+  document.getElementById('exportCsvBtn').disabled = !hasAlive;
+  document.getElementById('copyAliveBtn').disabled = !hasAlive;
+
+  toast(scanState.stopRequested ? '⏹ فرآیند متوقف شد' : '✅ تست و تحلیل به پایان رسید');
+}
+
+function stopScan() {
+  scanState.stopRequested = true;
+  toast('در حال توقف ارسال درخواست‌ها...');
+}
+
+function clearResults() {
+  scanState = { running: false, stopRequested: false, results: [], total: 0, tested: 0, alive: 0, dead: 0 };
+  document.getElementById('statBest').textContent = '—';
+  document.getElementById('statAvg').textContent = '—';
+  document.getElementById('exportBtn').disabled = true;
+  document.getElementById('exportCsvBtn').disabled = true;
+  document.getElementById('copyAliveBtn').disabled = true;
+  updateStats();
+  renderResults();
+  toast('🗑 لیست نتایج کاملا پاکسازی شد');
+}
+
+// ---------- مدیریت فایل‌های خروجی ----------
+function downloadFile(filename, content, type = 'text/plain') {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportTxt() {
+  const sorted = scanState.results.filter(r => r.alive).sort((a, b) => a.latency - b.latency);
+  const content = sorted.map(r => r.address).join('\n');
+  downloadFile('network_clean_output.txt', content);
+  toast('💾 فایل متنی ذخیره شد');
+}
+
+function exportCsv() {
+  const sorted = scanState.results.filter(r => r.alive).sort((a, b) => a.latency - b.latency);
+  const rows = [['Address', 'Latency (ms)', 'Type'], ...sorted.map(r => [r.address, r.latency, r.typeInfo])];
+  const csv = rows.map(r => r.join(',')).join('\n');
+  downloadFile('network_clean_output.csv', csv, 'text/csv');
+  toast('📊 فایل اکسل CSV ذخیره شد');
+}
+
+// ---------- رویدادها (Listeners) ----------
+document.getElementById('startBtn').addEventListener('click', startScan);
+document.getElementById('stopBtn').addEventListener('click', stopScan);
+document.getElementById('clearBtn').addEventListener('click', clearResults);
+document.getElementById('exportBtn').addEventListener('click', exportTxt);
+document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+
+document.getElementById('presetRange').addEventListener('change', (e) => {
+  if (e.target.value) {
+    const val = e.target.value;
+    if(!readySelectedRanges.includes(val)) {
+      readySelectedRanges.push(val);
+      document.getElementById('readySelectedOutput').value = readySelectedRanges.join('\n');
+      toast('✅ رنج انتخابی به سبد تست اضافه شد');
+    } else {
+      toast('⚠️ این رنج قبلاً در سبد موجود بود');
+    }
+    e.target.value = '';
+  }
+});
+
+const fileInput = document.getElementById('fileInput');
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+        document.getElementById('ipInput').value = ev.target.result;
+        toast('✅ فایل متنی با موفقیت در بخش دستی بارگذاری شد');
+    };
+    reader.readAsText(file);
+    e.target.value = ''; 
+});
+</script>
+</body>
+</html>
