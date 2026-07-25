@@ -313,3 +313,6 @@ This project is released under the **MIT License**. See the `LICENSE` file for d
 > 📱 [Telegram THE SAZ](https://t.me/the_saz)  
 > 🌐 [Professional Profile](https://zaya.io/thesaz)  
 > 📢 [Support Channel](https://t.me/InfoTech_VK)
+---
+
+Developed by [InfoTech_VK](https://github.com/InfoTechVK)
